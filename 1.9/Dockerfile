@@ -1,5 +1,5 @@
 #
-# Builds a docker image for i-doit 1.8
+# Builds a docker image for i-doit 1.9
 #
 FROM ubuntu:14.04
 ENV idoit_home /var/www/i-doit
@@ -15,8 +15,8 @@ RUN apt-get update && apt-get install -y -q wget
 # install mysql 5.6
 RUN apt-get update && apt-get install -y -q mysql-server-5.6
 
-# configure mysql 5.6 for i-doit 1.8
-COPY mysql-for-i-doit-1-8.cnf /etc/mysql/conf.d
+# configure mysql 5.6 for i-doit 1.9
+COPY mysql-for-i-doit-1-9.cnf /etc/mysql/conf.d
 
 # install required packages
 RUN apt-get update
