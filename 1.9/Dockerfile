@@ -1,55 +1,72 @@
+## vim:set ft=dockerfile:
 #
 # Builds a docker image for i-doit 1.9
 #
-FROM ubuntu:14.04
+
+################################ OS & PACKAGES ###########################
+FROM debian:9
 ENV idoit_home /var/www/i-doit
-ENV idoit_download_url https://sourceforge.net/projects/i-doit/files/i-doit/1.9/idoit-open-1.9.zip/download
+ENV idoit_download_url https://sourceforge.net/projects/i-doit/files/i-doit/1.9.3/idoit-open-1.9.3.zip/download
 
 COPY policy-rc.d /usr/sbin/policy-rc.d
 
 RUN apt-get update && apt-get dist-upgrade -y
 
-# install wget
-RUN apt-get update && apt-get install -y -q wget
+# install tools
+RUN apt-get update && apt-get install -y -q wget vim telnet tcpdump sudo
 
-# install mysql 5.6
-RUN apt-get update && apt-get install -y -q mysql-server-5.6
+#### install database
+###RUN apt-get update && apt-get install -y -q mariadb-client mariadb-server 
 
-# configure mysql 5.6 for i-doit 1.9
-COPY mysql-for-i-doit-1-9.cnf /etc/mysql/conf.d
 
 # install required packages
-RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -q  \
+RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q  \
 	apache2 \
-	libapache2-mod-php5 \
-	curl \
-	php5 \
-	php5-cli \
-	php5-xmlrpc \
-	php5-ldap \
-	php5-gd \
-	php5-mysql \
-	php5-curl \
+	libapache2-mod-php \
+	php \
+	php-bcmath \
+	php-cli \
+	php-common \
+	php-curl \
+	php-gd \
+	php-imagick \
+	php-json \
+	php-ldap \
+	php-mcrypt \
+	php-memcached \
+	php-mysql \
+	php-soap \
+	php-xml \
+	php-zip \
+	php-xmlrpc \
 	mcrypt \
-	php5-mcrypt \
 	unzip \
+	curl \
+	moreutils \
 	supervisor
+################################## DATABASE #######################
+#### configure database for i-doit
+###COPY mysql-for-i-doit-1-9.cnf /etc/mysql/conf.d
+################################ PHP ###########################
+## enable mcrypt in php5
+#RUN php5enmod mcrypt
+#RUN phpenmod memcached
+# configure php for i-doit
+################ --> moved to mysql official docker image
 
-# enable mcrypt in php5
-RUN php5enmod mcrypt
+COPY php-for-i-doit.ini /etc/php/7.0/mods-available
+RUN phpenmod php-for-i-doit
 
+################################ i-doit ###########################
 # create the home directory for i-doit
 RUN mkdir -p ${idoit_home}
 
-# fix two php configuration options, required for i-doit
-RUN sed -i \
-	-e "s#; max_input_vars = 1000#max_input_vars = 10000#" \
-	-e "s#post_max_size = 8M#post_max_size = 128M#" \
-	/etc/php5/apache2/php.ini
+## fix two php configuration options, required for i-doit
+#RUN sed -i \
+#	-e "s#; max_input_vars = 1000#max_input_vars = 10000#" \
+#	-e "s#post_max_size = 8M#post_max_size = 128M#" \
+#	/etc/php5/apache2/php.ini
 
-# make sure apache module mod_rewrite is enabled
-RUN a2enmod rewrite
 
 # download i-doit 1.9 and upack it
 RUN wget -O i-doit.zip ${idoit_download_url} \
@@ -60,14 +77,24 @@ RUN wget -O i-doit.zip ${idoit_download_url} \
 RUN chmod +x ${idoit_home}/idoit-rights.sh
 RUN cd ${idoit_home} && ./idoit-rights.sh
 
+RUN ln -s /var/www/i-doit/ /var/www/html/i-doit
+################################ APACHE ###########################
 # apache2 configuration for the virtual host on port 80
 # includes the alias definition for '/i-doit'
-COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
+#COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
+RUN a2dissite 000-default
+COPY apache-for-i-doit.conf /etc/apache2/sites-available
+RUN a2ensite apache-for-i-doit
+RUN a2enmod rewrite
 
+################################ DOCKER ###########################
 # expose i-doit webinterface running on port 80
 EXPOSE 80
 
-# install configuration file for supervisord
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+############################### "INIT" ############################
+#ENV APACHE_CONFDIR /etc/apache2
+#ENV APACHE_ENVVARS $APACHE_CONFDIR/envvars
 
-CMD ["/usr/bin/supervisord"]
+COPY apache2-foreground /usr/local/bin/
+WORKDIR /var/www/html
+CMD ["apache2-foreground"]
