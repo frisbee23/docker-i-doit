@@ -47,9 +47,12 @@ docker start idoit-mariadb
 
 -) Point your browser to `http://thehost:80/i-doit/` and complete the installation steps.
 
--) chmod +x change-db-after-idoit-setup.sh;  ./change-db-after-idoit-setup.sh
+-) the automatic installation creates an idoit mysql user, but it can only login from localhost, so we change it to be able to login from anywhere:
+```bash
+chmod +x change-db-after-idoit-setup.sh;  ./change-db-after-idoit-setup.sh
+```
 
--) Point your browser to `http://thehost:80/i-doit/` - you should be able to use i-doit now
+-) Point your browser again to `http://thehost:80/i-doit/` - you should be able to log in and use i-doit now
 
 
 
