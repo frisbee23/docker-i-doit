@@ -37,9 +37,9 @@ chmod +x launch-stack.sh; ./launch-stack.sh
 chmod +x initialize-db-once.sh; ./initialize-db-once.sh
 ```
 
-5)Point your browser to `http://thehost:80/i-doit/` and complete the installation steps.
+5) Point your browser to `http://thehost:80/i-doit/` and complete the installation steps.
 
-6)chmod +x change-db-after-idoit-setup.sh;  ./change-db-after-idoit-setup.sh
+6) chmod +x change-db-after-idoit-setup.sh;  ./change-db-after-idoit-setup.sh
 
 7) Point your browser to `http://thehost:80/i-doit/` - you should be able to use i-doit now
 
