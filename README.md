@@ -17,31 +17,39 @@ this readme is work in progress.
 
 ## Walkthrough on install/first launch 
 
-1) build the image
+-) build the image:
 ```bash
 git clone docker-i-doit && cd docker-i-doit/1.9
 docker build -t i-doit:1.9 .
 ```
 
-2) set mysql password 
+-) set mysql password:
 ```bash
 vim launch-stack.sh initialize-db-once.sh change-db-after-idoit-setup.sh # set a new password in these lines -> MYSQL_ROOT_PASSWORD=changeme
 ```
-3) start database & app
+-) start database & app:
 ```bash
 chmod +x launch-stack.sh; ./launch-stack.sh
 ```
 
-4) while the database is running change a few things which are not yet automated
+-) we now need to change a few things (which are sadly not yet automated):
 ```bash
 chmod +x initialize-db-once.sh; ./initialize-db-once.sh
+docker stop idoit-mariadb
+mv  /srv/mariadb-data/ib_logfile[01] /tmp
+
 ```
 
-5) Point your browser to `http://thehost:80/i-doit/` and complete the installation steps.
+-) start the database again:
+```bash
+docker start idoit-mariadb
+```
 
-6) chmod +x change-db-after-idoit-setup.sh;  ./change-db-after-idoit-setup.sh
+-) Point your browser to `http://thehost:80/i-doit/` and complete the installation steps.
 
-7) Point your browser to `http://thehost:80/i-doit/` - you should be able to use i-doit now
+-) chmod +x change-db-after-idoit-setup.sh;  ./change-db-after-idoit-setup.sh
+
+-) Point your browser to `http://thehost:80/i-doit/` - you should be able to use i-doit now
 
 
 
