@@ -45,7 +45,7 @@ mv  /srv/mariadb-data/ib_logfile[01] /tmp
 docker start idoit-mariadb
 ```
 
--) Point your browser to `http://thehost:80/i-doit/` and complete the installation steps.
+-) Point your browser to `http://thehost:80/i-doit/` and complete the installation steps. the installation should finish, but then you will be unable to login yet, because...
 
 -) the automatic installation creates an idoit mysql user, but it can only login from localhost, so we change it to be able to login from anywhere:
 ```bash
