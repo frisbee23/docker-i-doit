@@ -37,11 +37,9 @@ chmod +x launch-stack.sh; ./launch-stack.sh
 chmod +x initialize-db-once.sh; ./initialize-db-once.sh
 docker stop idoit-mariadb
 mv  /srv/mariadb-data/ib_logfile[01] /tmp
+
 ```
 
-
-Point your browser to `http://thehost:80/i-doit/` and complete the installation steps.
-=======
 -) start the database again:
 ```bash
 docker start idoit-mariadb
@@ -55,7 +53,6 @@ chmod +x change-db-after-idoit-setup.sh;  ./change-db-after-idoit-setup.sh
 ```
 
 -) Point your browser again to `http://thehost:80/i-doit/` - you should be able to log in and use i-doit now
-
 
 
 ## to install plugins
